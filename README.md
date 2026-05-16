@@ -240,6 +240,22 @@ For a typical knowledge system (50-200 entries per center), all operations are r
 
 ---
 
+## Limitations
+
+1. **No semantic understanding.** Janet routes by token co-occurrence, not meaning. "free energy" (in corpus) and "Gibbs free energy" (not in corpus) share tokens → amplitude is high for both. The system cannot distinguish related-but-different concepts that share vocabulary.
+
+2. **Adjacent queries are not detected.** amplitude=0 works perfectly for foreign queries (zero token overlap). But queries from the same field that share vocabulary with the corpus get high amplitude even when the specific answer doesn't exist. The LLM must judge whether the returned entry actually answers the question.
+
+3. **phi is O(N³).** Only computable for N≤200. For production, use self_cost (O(N²), stronger predictor).
+
+4. **Orbits are short.** With small corpora, most orbits converge in 2 steps. The path rarely has more than 1-2 entries. Longer, more informative orbits require denser corpora.
+
+5. **Requires vocabulary discipline.** A4 (faithful encoding) depends on entries sharing tokens deliberately. Random or inconsistent vocabulary breaks the geometry. The system rewards discipline and punishes sloppiness.
+
+6. **Not a replacement for RAG.** For large-scale retrieval with semantic understanding (paraphrases, synonyms), transformer-based RAG is better. Janet is for systems where determinism, measurable confidence, and self-prescription matter more than coverage.
+
+---
+
 ## Open questions
 
 1. **Is phi ∝ 1/cost a theorem?** Both are functions of the Gram matrix. The correlation is perfect when encoding preserves structure. Open: formal proof for convergent-projection + fixed point + faithful encoding.
